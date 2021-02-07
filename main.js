@@ -10,11 +10,11 @@ document.addEventListener("DOMContentLoaded", (ev) => {
       chart: null,
       chartConfig: chartConfig,
       time: {
-        A: 10, // sangat lambat
-        B: 8, // lambat
-        C: 5, // menengah
-        D: 4, // cepat
-        E: 2, // sangat cepat
+        A: 50, // sangat lambat
+        B: 40, // lambat
+        C: 30, // menengah
+        D: 20, // cepat
+        E: 10, // sangat cepat
       },
       // himpunan kandidat
       C: ["AAAA", "AABB", "ACAD", "DAAD"],
@@ -41,14 +41,14 @@ document.addEventListener("DOMContentLoaded", (ev) => {
       ],
       // model untuk form input censor (JIN/JOUT)
       form: {
-        j1in: 150,
-        j1out: 100,
-        j2in: 100,
-        j2out: 75,
-        j3in: 120,
-        j3out: 70,
-        j4in: 110,
-        j4out: 80,
+        j1in: 0,
+        j1out: 0,
+        j2in: 0,
+        j2out: 0,
+        j3in: 0,
+        j3out: 0,
+        j4in: 0,
+        j4out: 0,
       },
     },
     watch: {

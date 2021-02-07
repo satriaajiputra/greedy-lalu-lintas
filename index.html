@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <title>Lalintas</title>
+    <style>
+        canvas {
+            display: block;
+        }
+        .view {
+            width: calc(448px + 16px * 2);
+            padding: 0 16px;
+        }
+        .information {
+            width: calc(100% - (448px + 16px * 2));
+            padding: 0 16px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="container mx-auto my-10 px-4">
+            <div class="flex flex-wrap -mx-4">
+                <div class="view">
+                    <div class="rounded-md shadow-lg border border-gray-200 p-6">
+                        <canvas id="stage" width="400" height="400"></canvas>
+                    </div>
+                    <div class="rounded-md shadow-lg border border-gray-200 p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-800">
+                                        <th class="py-2">Variabel</th>
+                                        <th>Waktu</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-600 font-medium text-center">
+                                    <tr>
+                                        <td class="py-1">A</td>
+                                        <td>50 Detik</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1">B</td>
+                                        <td>40 Detik</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1">C</td>
+                                        <td>30 Detik</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1">D</td>
+                                        <td>20 Detik</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-1">E</td>
+                                        <td>10 Detik</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="information">
+                    <div class="rounded-md shadow-lg border border-gray-200 p-6">
+                        <h3 class="font-bold text-xl mb-4">Monitoring Lampu Lalulintas</h3>
+                        <button @click.prevent="start" v-if="!monitoring" class="inline-block px-6 py-2 bg-green-600 text-gray-100 rounded-md border border-green-700 focus:outline-none hover:bg-green-700">
+                            Mulai Monitoring
+                        </button>
+
+                        <div v-show="showCensorForm" class="grid grid-cols-4 gap-4 mt-4 border border-green-300 p-2">
+                            <div>
+                                <h4 class="font-semibold mb-3">Jalur 1</h4>
+                                <div class="flex items-center mb-2">
+                                    <input type="number" min="0" v-model="form.j1in" class="text-sm block w-full border border-gray-300 rounded-tl rounded-bl px-2 py-1 focus:outline-none border-r-0" placeholder="JIN">
+                                    <span class="inline-blocl px-2 bg-gray-300 py-1 border border-gray-300 text-sm rounded-tr rounded-br">JIN</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="number" min="0" v-model="form.j1out" class="text-sm block w-full border border-gray-300 rounded-tl rounded-bl px-2 py-1 focus:outline-none border-r-0" placeholder="JOUT">
+                                    <span class="inline-blocl px-2 bg-gray-300 py-1 border border-gray-300 text-sm rounded-tr rounded-br">JOUT</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-3">Jalur 2</h4>
+                                <div class="flex items-center mb-2">
+                                    <input type="number" min="0" v-model="form.j2in" class="text-sm block w-full border border-gray-300 rounded-tl rounded-bl px-2 py-1 focus:outline-none border-r-0" placeholder="JIN">
+                                    <span class="inline-blocl px-2 bg-gray-300 py-1 border border-gray-300 text-sm rounded-tr rounded-br">JIN</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="number" min="0" v-model="form.j2out" class="text-sm block w-full border border-gray-300 rounded-tl rounded-bl px-2 py-1 focus:outline-none border-r-0" placeholder="JOUT">
+                                    <span class="inline-blocl px-2 bg-gray-300 py-1 border border-gray-300 text-sm rounded-tr rounded-br">JOUT</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-3">Jalur 3</h4>
+                                <div class="flex items-center mb-2">
+                                    <input type="number" min="0" v-model="form.j3in" class="text-sm block w-full border border-gray-300 rounded-tl rounded-bl px-2 py-1 focus:outline-none border-r-0" placeholder="JIN">
+                                    <span class="inline-blocl px-2 bg-gray-300 py-1 border border-gray-300 text-sm rounded-tr rounded-br">JIN</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="number" min="0" v-model="form.j3out" class="text-sm block w-full border border-gray-300 rounded-tl rounded-bl px-2 py-1 focus:outline-none border-r-0" placeholder="JOUT">
+                                    <span class="inline-blocl px-2 bg-gray-300 py-1 border border-gray-300 text-sm rounded-tr rounded-br">JOUT</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-3">Jalur 4</h4>
+                                <div class="flex items-center mb-2">
+                                    <input type="number" min="0" v-model="form.j4in" class="text-sm block w-full border border-gray-300 rounded-tl rounded-bl px-2 py-1 focus:outline-none border-r-0" placeholder="JIN">
+                                    <span class="inline-blocl px-2 bg-gray-300 py-1 border border-gray-300 text-sm rounded-tr rounded-br">JIN</span>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="number" min="0" v-model="form.j4out" class="text-sm block w-full border border-gray-300 rounded-tl rounded-bl px-2 py-1 focus:outline-none border-r-0" placeholder="JOUT">
+                                    <span class="inline-blocl px-2 bg-gray-300 py-1 border border-gray-300 text-sm rounded-tr rounded-br">JOUT</span>
+                                </div>
+                            </div>
+
+                            <button @click.prevent="submitCensor" class="inline-block px-6 py-2 bg-green-600 text-gray-100 rounded-md border border-green-700 focus:outline-none hover:bg-green-700">
+                                Simpan
+                            </button>
+                        </div>
+
+                        <figure  class="highcharts-figure mt-8">
+                            <div ref="chart"></div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <script src="https://code.highcharts.com/stock/highstock.js"></script> -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <!-- <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script> -->
+    <script src="calc-combination.js"></script>
+    <script src="greedy-lalintas.js"></script>
+    <script src="chart.js"></script>
+    <script src="drawer.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

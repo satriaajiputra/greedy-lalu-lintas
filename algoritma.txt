@@ -1,0 +1,135 @@
+OptimasiLaluLintas
+{I.S.: Nilai Waktu sudah terdefinisi, pengguna memasukkan himpunan kandidat dan data sensor pada setiap lajur}
+{F.S.: Menampilkan himpunan solusi dari hasil perhitungan}
+
+Kamus:
+  const
+    MaksKandidat = 4
+    MaksSiklus = 2
+
+  type
+    RecordLajur = Record
+      JIN, JOUT: integer
+    EndRecord
+
+    RecordWaktu = Record
+      A,B,C,D,E: integer
+    EndRecord
+
+    RecordHimpSolusi = Record
+      himpunan: ArrayKandidat,
+      SR: real // selisih rata-rata
+    EndRecord
+
+    ArrayKandidat = array [1..MaksKandidat] of String
+    ArrayLajur = array [1..MaksKandidat] of RecordLajur
+  
+  DataSensor: array [1..MaksSiklus] of ArrayLajur
+  C, TempC: array [1..MaksKandidat] of ArrayKandidat
+  S, TempS: RecordHimpSolusi
+  Waktu: RecordWaktu
+
+  // DAP = Densitas antrian sementara
+  Selected, LastSelected, DAP: ArrayKandidat
+
+  // DHT = Delay lampu hijau terakhir
+  // DHS = Delay lampu hijau sementara
+  i, j, k, DHS, DHT: integer // iterator
+
+  // VIN = kecepatan arus kendaraan yang masuk terakhir
+  // VOUT = kecepatan arus kendaraan yang keluar terakhir
+  VIN, VOUT: real
+  
+Algoritma:
+
+  // isi nilai untuk waktu
+  Waktu.A <- 50
+  Waktu.B <- 40
+  Waktu.C <- 30
+  Waktu.D <- 20
+  Waktu.E <- 10
+
+  // isi nilai himp. kandidat
+  For i <- 1 to MaksKandidat do
+    For j <- 1 to MaksKandidat do
+      Input(C[i][j])
+    EndFor
+  EndFor
+
+  // isi nilai data sensor
+  For i <- 1 to MaksSiklus do
+    For j <- 1 to MaksKandidat do
+      Input(DataSensor[i][j])
+    EndFor
+  EndFor
+
+  // Atur nilai awal S
+  S <- nil
+
+  // lakukan perhitungan untuk setiap siklus berdasarkan
+  // DataSensor
+  For i <- 1 to MaksSiklus do
+
+    // Atur nilai awal C, S, DHT, Selected
+    TempC <- C
+    TempS <- nil
+    DHT <- nil
+    Selected <- nil
+
+    For j <- 1 to MaksKandidat do
+
+      // == FUNGSI SELEKSI
+      // Update nilai Selected
+      // Simpan Selected saat ini ke LastSelected
+      LastSelected <- Selected
+      Selected = tempC[j]
+      tempC[j] <- 0
+
+      // == FUNGSI OBYEKTIF
+      // Atur ulang nilai DAP
+      DAP <- nil
+
+      For k <- 1 to MaksKandidat do
+
+        // Dapatkan nilai DHS
+        DHS <- Waktu[Selected[k]]
+
+        // Isi nilai DHT
+        If (LastSelected <> nil) Then
+          DHT <- Waktu[LastSelected[k]]
+        Else If (S == nil) Then
+          DHT <- Waktu[Selected[k]]
+        Else
+          DHT <- Waktu[S.himpunan[k]]
+        EndIf
+
+        // hitung kecepatan masuk dan keluar
+        VIN <- DataSensor[k].JIN/DHT
+        VIOUT <- DataSensor[k].JOUT/DHT
+
+        // dapatkan nilai DAP
+        DAP[k] <- absolute((VIN*DHS) - (VOUT*DHS))       
+      EndFor
+      
+      // Masukkan hasil perhitungan ke dalam TempS
+      TempS[j].himpunan <- Selected
+
+      // menghitung selisih rata-rata
+      TempS[j].SR <- calculateCombination(DAP)
+
+    EndFor
+
+    // == FUNGSI KELAYAKAN
+    // membandingkan nilai S. ambil nilai S dengan sr yang terkecil
+    For j <- 1 to MaksKandidat do
+      If (S == nil) Then
+        S = TempS[j]
+      Else If (S.SR > TempS[j].SR) Then
+        S = TempS[j]
+      EndIf
+    EndFor
+
+    // Tampilkan nilai hasil optimasi
+    Output(S)
+  EndFor
+

@@ -1,3 +1,8 @@
+/**
+ * Check out {@link https://gist.github.com/dimasmiftah/63a899f018c903326ecccdac91b21e56|dimasmiftah} Gist
+ * @file Calculate all possible combinations of r elements in a given array of size n
+ * @author Dimas Miftahul Huda <dimas.mfth@gmail.com>
+ */
 const calculateCombination = (arr, r) => {
   const data = [];
   const result = [];
